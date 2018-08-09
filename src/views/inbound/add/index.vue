@@ -117,7 +117,7 @@ export default {
     onSubmit() {
       this.form.volume_sum = 0.0
       this.form.quanlity = 0
-      // 计算入库单总体积以及支数
+      // 计算入库单总体积以及支数pcs
       for (var index in this.inbound_items) {
         var i_items = this.inbound_items
         i_items[index].volume = i_items[index].thickness * i_items[index].width * i_items[index].length * i_items[index].pcs / 1000000
