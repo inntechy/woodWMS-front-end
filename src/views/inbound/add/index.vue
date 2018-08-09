@@ -43,7 +43,6 @@
         v-for="(inbound_item, index) in inbound_items"
         :label="'规格' + index"
         :key="inbound_item.key"
-        
       >
         <el-col :span="5">
           <el-input-number 
@@ -117,21 +116,31 @@ export default {
     onSubmit() {
       this.form.volume_sum = 0.0
       this.form.quanlity = 0
-      // 计算入库单总体积以及支数pcs
-      for (var index in this.inbound_items) {
-        var i_items = this.inbound_items
-        i_items[index].volume = i_items[index].thickness * i_items[index].width * i_items[index].length * i_items[index].pcs / 1000000
-        this.form.volume_sum += i_items[index].volume
-        this.form.quanlity += i_items[index].pcs
-      }
-      if (addInbound_note(this.form).ID_time !== null) {
-        this.$message('提交成功')
-      } else {
-        this.$message({
-          message: '提交失败',
-          type: 'warning'
-        })
-      }
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          // 计算入库单总体积以及支数pcs
+          for (var index in this.inbound_items) {
+            var i_items = this.inbound_items
+            i_items[index].volume = i_items[index].thickness * i_items[index].width * i_items[index].length * i_items[index].pcs / 1000000
+            this.form.volume_sum += i_items[index].volume
+            this.form.quanlity += i_items[index].pcs
+          }
+          if (addInbound_note(this.form).ID_time !== null) {
+            this.$message('提交成功')
+          } else {
+            this.$message({
+              message: '提交失败',
+              type: 'warning'
+            })
+          }
+        // 表单不合法
+        } else {
+          this.$message({
+            message: '信息填写有误',
+            type: 'warning'
+          })
+        }
+      })
     },
     onCancel() {
       this.$message({
