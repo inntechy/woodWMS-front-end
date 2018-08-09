@@ -125,16 +125,17 @@ export default {
             this.form.volume_sum += i_items[index].volume
             this.form.quanlity += i_items[index].pcs
           }
+          // 通过返回数据的ID_time是否存在来判断提交是否成功
           if (addInbound_note(this.form).ID_time !== null) {
             this.$message('提交成功')
           } else {
             this.$message({
               message: '提交失败',
-              type: 'warning'
+              type: 'error'
             })
           }
-        // 表单不合法
         } else {
+          // 表单不合法
           this.$message({
             message: '信息填写有误',
             type: 'warning'
