@@ -27,3 +27,18 @@ export function addInbound_note(data) {
     data: note_data
   })
 }
+
+// GET host/api/inbound_notes/:inid
+export function getInbound_noteById(id) {
+  var url = 'api/inbound_notes/' + id
+  return request({
+    baseURL: process.env.DB_API,
+    url: url,
+    method: 'GET'
+  })
+}
+
+// 根据ID_time获取items
+export function getInbound_itemsById_time(id) {
+
+}

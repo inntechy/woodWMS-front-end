@@ -124,12 +124,15 @@ export default {
             i_items[index].volume = i_items[index].thickness * i_items[index].width * i_items[index].length * i_items[index].pcs / 1000000
             this.form.volume_sum += i_items[index].volume
             this.form.quanlity += i_items[index].pcs
-            // 此处应补上提交item的request
+            // TO-DO 此处应补上提交item的request
           }
           // 通过返回数据的ID_time是否存在来判断提交是否成功
           // 成功后将输入框归零
           if (addInbound_note(this.form).ID_time !== null) {
-            this.$message('提交成功')
+            this.$message({
+              message: '提交成功',
+              type: 'success'
+            })
             this.form.container_id = ''
             this.form.brand = ''
             this.form.name = ''
