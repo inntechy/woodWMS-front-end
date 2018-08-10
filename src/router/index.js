@@ -156,6 +156,15 @@ export const constantRouterMap = [
           title: '所有入库单',
           icon: 'inbound'
         }
+      },
+      {
+        path: 'details',
+        component: () => import('@/views/inbound/sigleInfo/index'),
+        name: 'details',
+        meta: {
+          title: '入库单详情',
+          icon: 'details'
+        }
       }
     ]
   },

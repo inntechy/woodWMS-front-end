@@ -7,8 +7,8 @@
         </el-input>  
       </div>
       <el-col :span=2>
-        <p>柜号:{{form.container_id}}!</p>
-        
+        <h3>柜号:</h3>
+        <p>{{form.container_id}}</p>
       </el-col>
     </div>
 </template>
@@ -27,7 +27,7 @@ export default {
   },
   methods: {
     searchOnClick(id) {
-      // 判断输入为数字且大小为13位
+      // 判断输入为数字且大小为13位 **校验输入数据**
       if (!isNaN(id) && Number(id) > 1000000000000 && Number(id) < 10000000000000) {
         this.getNoteById(id)
       } else {
@@ -59,6 +59,9 @@ export default {
   .head-line-search{
     text-align: center;
     font-weight: bolder;
+  }
+  p{
+    display: inline-block;
   }
 </style>
 
