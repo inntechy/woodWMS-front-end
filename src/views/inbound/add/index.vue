@@ -238,6 +238,7 @@ export default {
         length: 0,
         pcs: 0
       }
+      this.$router.push({ name: 'details', query: { id: this.form.ID_time }})
     },
     // 点击取消按钮
     onCancel() {

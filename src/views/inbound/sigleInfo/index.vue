@@ -176,11 +176,18 @@ export default {
       this.progressStatus = null
       this.percentage = 0
       delInbound_itemsById_time(this.qurry_id).then(response => {
-        this.percentage = 50
+        this.percentage += 50
       })
       delInbound_notesById_time(this.qurry_id).then(response => {
-        this.percentage = 100
+        this.percentage += 50
         this.progressStatus = 'success'
+        var that = this
+        this.$message({
+          message: '删除成功',
+          type: 'success',
+          duration: 1500,
+          onClose: function() { that.$router.push({ name: 'qurry' }) }
+        })
       })
     }
   }
