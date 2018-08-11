@@ -9,7 +9,8 @@
       <el-card class="box-card">
         <div slot="header" class="clearfix">
           <span style="font-size: 24px">入库单详情</span>
-          <el-button style="float: right;" @click="warnningDialogVisible = true" type="danger">删除</el-button>
+          <el-button type="danger" icon="el-icon-delete" style="float: right;" @click="warnningDialogVisible = true" circle></el-button>
+          <el-button type="primary" icon="el-icon-edit"  style="float: right; margin-right: 10px" @click="editBtnOnClick" circle></el-button>
           <i class="el-icon-time"></i>
           <p style="display:inline-block">{{form.createAt}}</p>
         </div>
@@ -84,6 +85,7 @@ import {
 export default {
   data() {
     return {
+      requestFlag: 'POST',
       percentage: 0,
       progressStatus: '',
       delettingDialogVisible: false,
@@ -101,11 +103,20 @@ export default {
       // query.id存在 故而是由页面跳转而来
       this.qurry_id = this.$route.query.id
       this.searchOnClick(this.qurry_id)
+      this.requestFlag = 'PATCH'
     } else {
       // 不存在则为直接点击进来的
+      this.requestFlag = 'POST'
     }
   },
   methods: {
+    editBtnOnClick() {
+      if (this.qurry_id) {
+        var routeList = this.items
+        routeList.splice(routeList.length - 1, 1)
+        this.$router.push({ name: 'add', params: { form: this.form, items: routeList }})
+      }
+    },
     // 控制进度条
     progeressControl() {
       this.percentage += 10

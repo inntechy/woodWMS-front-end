@@ -113,6 +113,15 @@ export default {
       }
     }
   },
+  created() {
+    if (this.$route.params.form) {
+      // query.id存在 故而是由页面跳转而来
+      this.form = this.$route.params.form
+      this.inbound_items = this.$route.params.items
+    } else {
+      // 不存在则为直接点击进来的
+    }
+  },
   methods: {
     onSubmit() {
       this.form.volume_sum = 0.0
