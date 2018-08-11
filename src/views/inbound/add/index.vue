@@ -72,11 +72,19 @@
 </template>
 
 <script>
-import { addInbound_note, addInbound_item } from '@/api/inbound'
+import {
+  addInbound_note,
+  addInbound_item,
+  patchInbound_itemById,
+  patchInbound_noteById_time,
+  delInbound_itemsById
+} from '@/api/inbound'
 
 export default {
   data() {
     return {
+      requestFlag: 'POST',
+      isWaitting: 1,
       form: {
         ID_time: null,
         container_id: '',
@@ -118,8 +126,10 @@ export default {
       // query.id存在 故而是由页面跳转而来
       this.form = this.$route.params.form
       this.inbound_items = this.$route.params.items
+      this.requestFlag = 'PATCH'
     } else {
       // 不存在则为直接点击进来的
+      this.requestFlag = 'POST'
     }
   },
   methods: {
@@ -137,32 +147,13 @@ export default {
           }
           // 通过返回数据的ID_time是否存在来判断提交是否成功
           // 成功后将输入框归零
-          addInbound_note(this.form).then(response => {
-            this.form.ID_time = response.ID_time
-            // 提交入库单子项
-            for (var index in this.inbound_items) {
-              var i_items = this.inbound_items
-              // 子项的ID_time需要与入库单保持一致
-              i_items[index].ID_time = this.form.ID_time
-              addInbound_item(i_items[index])
-            }
-            if (this.form.ID_time !== null) {
-              this.$message({
-                message: '提交成功',
-                type: 'success'
-              })
-              this.form.container_id = ''
-              this.form.brand = ''
-              this.form.name = ''
-              this.form.level = ''
-              this.form.goods_mark = ''
-            } else {
-              this.$message({
-                message: '提交失败',
-                type: 'error'
-              })
-            }
-          })
+          // 需要先判断是新建还是修改
+          if (this.requestFlag === 'PATCH') {
+            this.changeOperation()
+          } else {
+            // 默认为新建
+            this.newOperation()
+          }
         } else {
           // 表单不合法
           this.$message({
@@ -172,6 +163,83 @@ export default {
         }
       })
     },
+    // 新建入库单的操作
+    newOperation() {
+      addInbound_note(this.form).then(response => {
+        this.form.ID_time = response.ID_time
+        // 提交入库单子项
+        for (var index in this.inbound_items) {
+          var i_items = this.inbound_items
+          // 子项的ID_time需要与入库单保持一致
+          i_items[index].ID_time = this.form.ID_time
+          addInbound_item(i_items[index])
+        }
+        if (this.form.ID_time !== null) {
+          this.$message({
+            message: '提交成功',
+            type: 'success'
+          })
+          this.clearForm()
+        } else {
+          this.$message({
+            message: '提交失败',
+            type: 'error'
+          })
+        }
+      })
+    },
+    // 更新入库单的操作
+    changeOperation() {
+      this.isWaitting = 1
+      patchInbound_noteById_time(this.form).then(response => {
+        this.isWaitting -= 1
+        if (this.isWaitting === 0) {
+          this.clearForm()
+        }
+      })
+      var i_items = this.inbound_items
+      for (var index in i_items) {
+        this.isWaitting += 1
+        if (i_items[index].ID_time) {
+          patchInbound_itemById(i_items[index]).then(response => {
+            this.isWaitting -= 1
+            if (this.isWaitting === 0) {
+              this.clearForm()
+            }
+          })
+        } else {
+          // 子项的ID_time需要与入库单保持一致
+          i_items[index].ID_time = this.form.ID_time
+          addInbound_item(i_items[index]).then(response => {
+            this.isWaitting -= 1
+            if (this.isWaitting === 0) {
+              this.clearForm()
+            }
+          })
+        }
+      }
+      this.$message({
+        message: '修改成功',
+        type: 'success'
+      })
+    },
+    // 数据归零
+    clearForm() {
+      this.isWaitting = 1
+      this.form.container_id = ''
+      this.form.brand = ''
+      this.form.name = ''
+      this.form.level = ''
+      this.form.goods_mark = ''
+      this.inbound_items.splice(1, this.inbound_items.length - 1)
+      this.inbound_items[0] = {
+        thickness: 0,
+        width: 0,
+        length: 0,
+        pcs: 0
+      }
+    },
+    // 点击取消按钮
     onCancel() {
       this.$message({
         message: 'cancel!',
@@ -180,9 +248,11 @@ export default {
     },
     removeItem(item) {
       var index = this.inbound_items.indexOf(item)
-      if (index !== -1) {
-        this.inbound_items.splice(index, 1)
+      // 如果是修改操作，还需要将数据库中的数据一并删除
+      if (this.requestFlag === 'PATCH') {
+        delInbound_itemsById(item.ID)
       }
+      this.inbound_items.splice(index, 1)
     },
     addItem() {
       this.inbound_items.push({
