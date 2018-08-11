@@ -61,7 +61,7 @@
         width="30%">
         <span>确定删除该入库单吗？删除后将无法恢复！</span>
         <span slot="footer" class="dialog-footer">
-          <el-button  @click="progeressControl">取 消</el-button>
+          <el-button  @click="warnningDialogVisible = false">取 消</el-button>
           <el-button type="danger" @click="delBtnOnClick">确 定</el-button>
         </span>
       </el-dialog>
@@ -113,10 +113,6 @@ export default {
         routeList.splice(routeList.length - 1, 1)
         this.$router.push({ name: 'add', params: { form: this.form, items: routeList }})
       }
-    },
-    // 控制进度条
-    progeressControl() {
-      this.percentage += 10
     },
     searchOnClick(id) {
       // 判断输入为数字且大小为13位 **校验输入数据**

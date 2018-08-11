@@ -41,7 +41,7 @@
       <!-- 下面为点击添加按钮增添一行的输入框 -->
       <el-form-item
         v-for="(inbound_item, index) in inbound_items"
-        :label="'规格' + index"
+        :label="'规格' + (Number(index) + 1)"
         :key="inbound_item.key"
       >
         <el-col :span="5">

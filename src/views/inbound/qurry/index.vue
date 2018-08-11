@@ -122,10 +122,10 @@ export default {
       this.delettingDialogVisible = true
       this.percentage = 0
       delInbound_itemsById_time(id).then(response => {
-        this.percentage = 50
+        this.percentage += 50
       })
       delInbound_notesById_time(id).then(response => {
-        this.percentage = 100
+        this.percentage += 50
         this.progressStatus = 'success'
       })
     },
