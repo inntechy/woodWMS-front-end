@@ -72,12 +72,13 @@
 </template>
 
 <script>
-import { addInbound_note } from '@/api/inbound'
+import { addInbound_note, addInbound_item } from '@/api/inbound'
 
 export default {
   data() {
     return {
       form: {
+        ID_time: null,
         container_id: '',
         brand: '',
         name: '',
@@ -124,26 +125,35 @@ export default {
             i_items[index].volume = i_items[index].thickness * i_items[index].width * i_items[index].length * i_items[index].pcs / 1000000
             this.form.volume_sum += i_items[index].volume
             this.form.quanlity += i_items[index].pcs
-            // TO-DO 此处应补上提交item的request
           }
           // 通过返回数据的ID_time是否存在来判断提交是否成功
           // 成功后将输入框归零
-          if (addInbound_note(this.form).ID_time !== null) {
-            this.$message({
-              message: '提交成功',
-              type: 'success'
-            })
-            this.form.container_id = ''
-            this.form.brand = ''
-            this.form.name = ''
-            this.form.level = ''
-            this.form.goods_mark = ''
-          } else {
-            this.$message({
-              message: '提交失败',
-              type: 'error'
-            })
-          }
+          addInbound_note(this.form).then(response => {
+            this.form.ID_time = response.ID_time
+            // 提交入库单子项
+            for (var index in this.inbound_items) {
+              var i_items = this.inbound_items
+              // 子项的ID_time需要与入库单保持一致
+              i_items[index].ID_time = this.form.ID_time
+              addInbound_item(i_items[index])
+            }
+            if (this.form.ID_time !== null) {
+              this.$message({
+                message: '提交成功',
+                type: 'success'
+              })
+              this.form.container_id = ''
+              this.form.brand = ''
+              this.form.name = ''
+              this.form.level = ''
+              this.form.goods_mark = ''
+            } else {
+              this.$message({
+                message: '提交失败',
+                type: 'error'
+              })
+            }
+          })
         } else {
           // 表单不合法
           this.$message({
