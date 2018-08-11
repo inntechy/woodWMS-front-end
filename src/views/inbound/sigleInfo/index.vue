@@ -85,7 +85,6 @@ import {
 export default {
   data() {
     return {
-      requestFlag: 'POST',
       percentage: 0,
       progressStatus: '',
       delettingDialogVisible: false,
@@ -103,10 +102,8 @@ export default {
       // query.id存在 故而是由页面跳转而来
       this.qurry_id = this.$route.query.id
       this.searchOnClick(this.qurry_id)
-      this.requestFlag = 'PATCH'
     } else {
       // 不存在则为直接点击进来的
-      this.requestFlag = 'POST'
     }
   },
   methods: {

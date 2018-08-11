@@ -116,6 +116,7 @@ export default {
     handleClickDel() {
       // 删除按钮被按下时
       var id = this.del_id
+      // 删除表格中的对应数据
       this.list.splice(this.del_index, 1)
       this.warnningDialogVisible = false
       this.delettingDialogVisible = true
