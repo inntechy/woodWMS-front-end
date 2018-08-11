@@ -64,6 +64,18 @@ export function getInbound_itemsById_time(id) {
   })
 }
 
+// 根据ID修改入库单内容
+// PATCH host/api/Inbound_notes/:inid
+export function patchInbound_noteById_time(id, data) {
+  var url = 'api/Inbound_notes/' + id
+  return request({
+    baseURL: process.env.DB_API,
+    method: 'PATCH',
+    url: url,
+    data: data
+  })
+}
+
 // 删除入库单
 // DELETE host/api/Inbound_notes/:inid
 export function delInbound_notesById_time(id) {
