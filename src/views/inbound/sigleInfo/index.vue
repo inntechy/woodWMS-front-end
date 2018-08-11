@@ -61,7 +61,7 @@
         <span>确定删除该入库单吗？删除后将无法恢复！</span>
         <span slot="footer" class="dialog-footer">
           <el-button  @click="progeressControl">取 消</el-button>
-          <el-button type="warnning" @click="delBtnOnClick">确 定</el-button>
+          <el-button type="danger" @click="delBtnOnClick">确 定</el-button>
         </span>
       </el-dialog>
       <el-dialog
@@ -94,6 +94,15 @@ export default {
         container_id: null
       },
       items: [{}]
+    }
+  },
+  created() {
+    if (this.$route.query.id) {
+      // query.id存在 故而是由页面跳转而来
+      this.qurry_id = this.$route.query.id
+      this.searchOnClick(this.qurry_id)
+    } else {
+      // 不存在则为直接点击进来的
     }
   },
   methods: {
@@ -160,6 +169,7 @@ export default {
     delBtnOnClick() {
       this.warnningDialogVisible = false
       this.delettingDialogVisible = true
+      this.progressStatus = null
       this.percentage = 0
       delInbound_itemsById_time(this.qurry_id).then(response => {
         this.percentage = 50

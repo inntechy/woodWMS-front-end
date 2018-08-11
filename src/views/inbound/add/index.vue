@@ -58,7 +58,7 @@
         </el-col>
         <el-col :span="5">
           <el-input-number 
-          v-model="inbound_item.pcs" :min="1" :max="1000" label="件数"></el-input-number>
+          v-model="inbound_item.pcs" :min="1" label="件数"></el-input-number>
         </el-col>
         <el-button v-if="inbound_items.length !== 1" type="danger" plain @click.prevent="removeItem(inbound_item)">删除</el-button>
       </el-form-item>

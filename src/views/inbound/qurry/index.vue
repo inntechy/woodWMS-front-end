@@ -26,7 +26,7 @@
       </el-table-column>
       <el-table-column label="品牌/品名">
         <template slot-scope="scope">
-          {{scope.row.brand}}/{{scope.row.name}}
+          {{scope.row.brand}} / {{scope.row.name}}
         </template>
       </el-table-column>
       <el-table-column align="center" label='总支数' width="100" prop="quanlity" />
@@ -40,27 +40,27 @@
         label="操作"
         width="150">
         <template slot-scope="scope">
-          <el-button @click="handleClickLook(scope.row.ID_time)" size="small">查看</el-button>
+          <el-button  @click="handleClickLook(scope.row.ID_time)" size="small">详情</el-button>
           <el-button @click="delBtnOnClick(scope.row.ID_time, scope.$index)" type="danger" size="small">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
     <el-dialog
-        title="警告"
-        :visible.sync="warnningDialogVisible"
-        width="30%">
-        <span>确定删除该入库单吗？删除后将无法恢复！</span>
-        <span slot="footer" class="dialog-footer">
-          <el-button  @click="warnningDialogVisible = false">取 消</el-button>
-          <el-button type="warnning" @click="handleClickDel()">确 定</el-button>
-        </span>
-      </el-dialog>
-      <el-dialog
-        title="删除中"
-        :visible.sync="delettingDialogVisible"
-        >
-        <el-progress :percentage="percentage" :status="progressStatus"></el-progress>
-      </el-dialog>
+      title="警告"
+      :visible.sync="warnningDialogVisible"
+    >
+      <span>确定删除该入库单吗？删除后将无法恢复！</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button  @click="warnningDialogVisible = false">取 消</el-button>
+        <el-button type="danger" @click="handleClickDel()">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="删除中"
+      :visible.sync="delettingDialogVisible"
+      >
+      <el-progress :percentage="percentage" :status="progressStatus"></el-progress>
+    </el-dialog>
   </div>
 </template>
 
@@ -106,6 +106,7 @@ export default {
     },
     handleClickLook(id) {
       // 此处需要跳转到详情页面
+      this.$router.push({ name: 'details', query: { id: id }})
     },
     delBtnOnClick(id, index) {
       this.warnningDialogVisible = true

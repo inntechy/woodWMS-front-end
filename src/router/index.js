@@ -133,7 +133,7 @@ export const constantRouterMap = [
     path: '/inbound',
     component: Layout,
     redirect: '/inbound/qurry',
-    name: '入库单',
+    name: 'inbound',
     meta: {
       title: '入库单',
       icon: 'inbound'
