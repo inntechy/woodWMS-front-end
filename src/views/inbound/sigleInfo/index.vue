@@ -37,13 +37,20 @@
             <span class="data">{{form.level}}</span>
           </div>
         </div>
-        <el-table :data="items" v-loading="listLoading" element-loading-text="加载中" border fit highlight-current-row>
+        <el-table
+        :data="items"
+        :row-class-name="tableRowClass"
+        v-loading="listLoading" element-loading-text="等待中" 
+        border
+        fit
+        highlight-current-row
+        >
           <el-table-column align="center" label='规格' width="100%">
-            <el-table-column align="center" label='厚度/mm'></el-table-column>
-            <el-table-column align="center" label='宽度/mm'></el-table-column>
-            <el-table-column align="center" label='长度/m'></el-table-column>
-            <el-table-column align="center" label='支数'></el-table-column>
-            <el-table-column align="center" label='立方'></el-table-column>
+            <el-table-column align="center" label='厚度/mm' prop="thickness"></el-table-column>
+            <el-table-column align="center" label='宽度/mm' prop="width"></el-table-column>
+            <el-table-column align="center" label='长度/m' prop="length"></el-table-column>
+            <el-table-column align="center" label='支数' prop="pcs"></el-table-column>
+            <el-table-column align="center" label='立方' prop="volume"></el-table-column>
           </el-table-column>
         </el-table>
       </el-card>
@@ -52,6 +59,7 @@
 
 <script>
 import { getInbound_noteById } from '@/api/inbound'
+import { getInbound_itemsById_time } from '@/api/inbound'
 
 export default {
   data() {
@@ -68,9 +76,7 @@ export default {
     searchOnClick(id) {
       // 判断输入为数字且大小为13位 **校验输入数据**
       if (!isNaN(id) && Number(id) > 1000000000000 && Number(id) < 10000000000000) {
-        if (this.getNoteById(id)) {
-          // 此处获取子表
-        }
+        this.getNoteById(id)
       } else {
         this.$message({
           message: '请检查单号是否正确',
@@ -84,18 +90,43 @@ export default {
         // 通过ID_time是否存在来判断返回是否正常
         if (data.ID_time !== null) {
           this.form = data
-          return true
+          // 此处获取子表
+          this.getItemById(id)
         } else {
           this.$message({
             message: '入库单获取失败',
             type: 'error'
           })
-          return false
         }
       })
     },
     getItemById(id) {
       // 获取item
+      getInbound_itemsById_time(id).then(response => {
+        var data = response
+        if (data !== null) {
+          this.items = data
+          this.items[this.items.length] = {
+            length: '合计',
+            pcs: this.form.quanlity,
+            volume: this.form.volume_sum
+          }
+          this.listLoading = false
+          return true
+        } else {
+          this.$message({
+            message: '未取得相关规格',
+            type: 'error'
+          })
+        }
+      })
+    },
+    // 设置表格行样式
+    tableRowClass({ row, rowIndex }) {
+      if (rowIndex === this.items.length - 1) {
+        return 'last-sum-row'
+      }
+      return ''
     }
   }
 }
@@ -155,6 +186,11 @@ export default {
     font-size: 16px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: cornflowerblue;
+  }
+
+  /* 表格最后一行 合计 */
+  .el-table .last-sum-row {
+    background: lightsteelblue;
   }
 </style>
 
