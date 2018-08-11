@@ -66,8 +66,20 @@ export function getInbound_itemsById_time(id) {
 
 // 根据ID修改入库单内容
 // PATCH host/api/Inbound_notes/:inid
-export function patchInbound_noteById_time(id, data) {
-  var url = 'api/Inbound_notes/' + id
+export function patchInbound_noteById_time(data) {
+  var url = 'api/Inbound_notes/'
+  return request({
+    baseURL: process.env.DB_API,
+    method: 'PATCH',
+    url: url,
+    data: data
+  })
+}
+
+// 根据ID修改入库单item的内容
+// PATCH host/api/Inbound_notes/
+export function patchInbound_itemById(data) {
+  var url = 'api/Inbound_items/'
   return request({
     baseURL: process.env.DB_API,
     method: 'PATCH',
@@ -91,6 +103,17 @@ export function delInbound_notesById_time(id) {
 // DELETE host/api/Inbound_items/inid=:inid
 export function delInbound_itemsById_time(id) {
   var url = 'api/Inbound_items/inid=' + id
+  return request({
+    baseURL: process.env.DB_API,
+    method: 'DELETE',
+    url: url
+  })
+}
+
+// 根据ID删除入库单item
+// DELETE host/api/Inbound_items/id=:id
+export function delInbound_itemsById(id) {
+  var url = 'api/Inbound_items/id=' + id
   return request({
     baseURL: process.env.DB_API,
     method: 'DELETE',
