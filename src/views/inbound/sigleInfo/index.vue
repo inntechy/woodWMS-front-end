@@ -9,7 +9,7 @@
       <el-card class="box-card">
         <div slot="header" class="clearfix">
           <span style="font-size: 24px">入库单详情</span>
-          <el-button style="float: right;" type="danger">删除</el-button>
+          <el-button style="float: right;" @click="warnningDialogVisible = true" type="danger">删除</el-button>
           <i class="el-icon-time"></i>
           <p style="display:inline-block">{{form.createAt}}</p>
         </div>
@@ -54,16 +54,40 @@
           </el-table-column>
         </el-table>
       </el-card>
+      <el-dialog
+        title="警告"
+        :visible.sync="warnningDialogVisible"
+        width="30%">
+        <span>确定删除该入库单吗？删除后将无法恢复！</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button  @click="progeressControl">取 消</el-button>
+          <el-button type="warnning" @click="delBtnOnClick">确 定</el-button>
+        </span>
+      </el-dialog>
+      <el-dialog
+        title="删除中"
+        :visible.sync="delettingDialogVisible"
+        >
+        <el-progress :percentage="percentage" :status="progressStatus"></el-progress>
+      </el-dialog>
     </div>
 </template>
 
 <script>
-import { getInbound_noteById } from '@/api/inbound'
-import { getInbound_itemsById_time } from '@/api/inbound'
+import {
+  getInbound_noteById,
+  getInbound_itemsById_time,
+  delInbound_notesById_time,
+  delInbound_itemsById_time
+} from '@/api/inbound'
 
 export default {
   data() {
     return {
+      percentage: 0,
+      progressStatus: '',
+      delettingDialogVisible: false,
+      warnningDialogVisible: false,
       listLoading: true,
       qurry_id: null,
       form: {
@@ -73,6 +97,10 @@ export default {
     }
   },
   methods: {
+    // 控制进度条
+    progeressControl() {
+      this.percentage += 10
+    },
     searchOnClick(id) {
       // 判断输入为数字且大小为13位 **校验输入数据**
       if (!isNaN(id) && Number(id) > 1000000000000 && Number(id) < 10000000000000) {
@@ -104,7 +132,7 @@ export default {
       // 获取item
       getInbound_itemsById_time(id).then(response => {
         var data = response
-        if (data !== null) {
+        if (data.length !== 0) {
           this.items = data
           this.items[this.items.length] = {
             length: '合计',
@@ -127,6 +155,19 @@ export default {
         return 'last-sum-row'
       }
       return ''
+    },
+    // 删除按钮被按下时
+    delBtnOnClick() {
+      this.warnningDialogVisible = false
+      this.delettingDialogVisible = true
+      this.percentage = 0
+      delInbound_itemsById_time(this.qurry_id).then(response => {
+        this.percentage = 50
+      })
+      delInbound_notesById_time(this.qurry_id).then(response => {
+        this.percentage = 100
+        this.progressStatus = 'success'
+      })
     }
   }
 }

@@ -38,22 +38,44 @@
       <el-table-column
         fixed="right"
         label="操作"
-        width="100">
+        width="150">
         <template slot-scope="scope">
-          <el-button @click="handleClickLook(scope.row)" type="text" size="small">查看</el-button>
-          <el-button type="text" size="small">编辑</el-button>
+          <el-button @click="handleClickLook(scope.row.ID_time)" size="small">查看</el-button>
+          <el-button @click="delBtnOnClick(scope.row.ID_time, scope.$index)" type="danger" size="small">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog
+        title="警告"
+        :visible.sync="warnningDialogVisible"
+        width="30%">
+        <span>确定删除该入库单吗？删除后将无法恢复！</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button  @click="warnningDialogVisible = false">取 消</el-button>
+          <el-button type="warnning" @click="handleClickDel()">确 定</el-button>
+        </span>
+      </el-dialog>
+      <el-dialog
+        title="删除中"
+        :visible.sync="delettingDialogVisible"
+        >
+        <el-progress :percentage="percentage" :status="progressStatus"></el-progress>
+      </el-dialog>
   </div>
 </template>
 
 <script>
-import { getList } from '@/api/inbound'
+import { getList, delInbound_notesById_time, delInbound_itemsById_time } from '@/api/inbound'
 
 export default {
   data() {
     return {
+      del_id: null,
+      del_index: null,
+      percentage: 0,
+      progressStatus: '',
+      delettingDialogVisible: false,
+      warnningDialogVisible: false,
       list: { test: 'test' },
       listLoading: true,
       currentPage: 1,
@@ -82,8 +104,28 @@ export default {
         // 返回的数据没有变量名 所以只能直接用response
       })
     },
-    handleClickLook(row) {
+    handleClickLook(id) {
       // 此处需要跳转到详情页面
+    },
+    delBtnOnClick(id, index) {
+      this.warnningDialogVisible = true
+      this.del_id = id
+      this.del_index = index + (this.currentPage - 1) * this.pagesize
+    },
+    handleClickDel() {
+      // 删除按钮被按下时
+      var id = this.del_id
+      this.list.splice(this.del_index, 1)
+      this.warnningDialogVisible = false
+      this.delettingDialogVisible = true
+      this.percentage = 0
+      delInbound_itemsById_time(id).then(response => {
+        this.percentage = 50
+      })
+      delInbound_notesById_time(id).then(response => {
+        this.percentage = 100
+        this.progressStatus = 'success'
+      })
     },
     // 两个处理分页的函数
     handleSizeChange: function(size) {

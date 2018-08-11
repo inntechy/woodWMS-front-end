@@ -63,3 +63,25 @@ export function getInbound_itemsById_time(id) {
     url: url
   })
 }
+
+// 删除入库单
+// DELETE host/api/Inbound_notes/:inid
+export function delInbound_notesById_time(id) {
+  var url = 'api/Inbound_notes/' + id
+  return request({
+    baseURL: process.env.DB_API,
+    method: 'DELETE',
+    url: url
+  })
+}
+
+// 删除入库单子项
+// DELETE host/api/Inbound_items/inid=:inid
+export function delInbound_itemsById_time(id) {
+  var url = 'api/Inbound_items/inid=' + id
+  return request({
+    baseURL: process.env.DB_API,
+    method: 'DELETE',
+    url: url
+  })
+}
