@@ -80,6 +80,29 @@ export const constantRouterMap = [
       }
     ]
   },
+
+  {
+    path: '/delivery',
+    component: Layout,
+    redirect: '/delivery/add',
+    name: 'delivery',
+    meta: {
+      title: '送货单',
+      icon: 'delivery'
+    },
+    children: [
+      {
+        path: 'add',
+        component: () => import('@/views/delivery/add/index'), // Parent router-view
+        name: 'dliveryAdd',
+        meta: {
+          title: '新建送货单',
+          icon: 'add'
+        }
+      }
+    ]
+  },
+
   { path: '*', redirect: '/404', hidden: true }
 ]
 

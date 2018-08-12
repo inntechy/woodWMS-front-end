@@ -120,3 +120,14 @@ export function delInbound_itemsById(id) {
     url: url
   })
 }
+
+// 根据货号获取入库单item，返回一个嵌套数组，包含的是所有符合条件的itemsList
+// GET host/api/Inbound_items/goods_mark=:goods_mark
+export function getInbound_itemsByGoodsmark(goodsmark) {
+  var url = 'api/Inbound_items/goods_mark=' + goodsmark
+  return request({
+    baseURL: process.env.DB_API,
+    method: 'GET',
+    url: url
+  })
+}
