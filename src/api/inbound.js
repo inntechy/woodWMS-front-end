@@ -43,9 +43,9 @@ export function addInbound_item(data) {
 }
 
 // 根据ID获取入库单信息
-// GET host/api/Inbound_notes/:inid
+// GET host/api/Inbound_notes/inid=:inid
 export function getInbound_noteById(id) {
-  var url = 'api/Inbound_notes/' + id
+  var url = 'api/Inbound_notes/inid=' + id
   return request({
     baseURL: process.env.DB_API,
     url: url,
@@ -121,10 +121,10 @@ export function delInbound_itemsById(id) {
   })
 }
 
-// 根据货号获取入库单item，返回一个嵌套数组，包含的是所有符合条件的itemsList
-// GET host/api/Inbound_items/goods_mark=:goods_mark
-export function getInbound_itemsByGoodsmark(goodsmark) {
-  var url = 'api/Inbound_items/goods_mark=' + goodsmark
+// 根据货号获取入库单信息
+// GET host/api/Inbound_notes/goods_mark=:goods_mark
+export function getInbound_notesByGoodsmark(goodsmark) {
+  var url = 'api/Inbound_notes/goods_mark=' + goodsmark
   return request({
     baseURL: process.env.DB_API,
     method: 'GET',
