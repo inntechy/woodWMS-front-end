@@ -23,10 +23,10 @@
          <el-cascader
           :loading="formline.isGetting"
           :options="formline.back_options"
-          @active-item-change="handleItemChange($event, index)"
           v-model="sizeList[index]"
           :key="formline.key"
           :disabled="!formline.inputDisabled"
+          :show-all-levels="false"
           >
           </el-cascader>
         </el-col>
@@ -53,7 +53,7 @@ export default {
         isGetting: true,
         goods_mark: null,
         inputDisabled: false,
-        key: 0,
+        key: 25,
         back_options: []
       }],
       sizeList: []
@@ -74,22 +74,24 @@ export default {
         // 对每个选项 获取它的items规格
         for (var options_index in this.formlines[index].back_options) {
           var ID_time = this.formlines[index].back_options[options_index].value
-          getInbound_itemsById_time(ID_time).then(iresponse => {
-            console.log('iresponse' + iresponse)
-            for (var each in iresponse) {
-              this.formlines[index].back_options[options_index].children[each] = {
-                label: iresponse.thickness + 'mm * ' + iresponse.width + 'mm * ' + iresponse.length + 'm',
-                value: iresponse.ID
-              }
-            }
-          })
+          this.mapDataToOptions(options_index, ID_time, index)
         }
         this.formlines[index].isGetting = false
       })
     },
-    handleItemChange(val, indexOfFormLine) {
-      // 总觉得还是根据货号返回入库单号比较靠谱！！！
-      // console.log('ItemChange 参数' + val + ' index:' + indexOfFormLine)
+
+    // 将数据填入选项中
+    mapDataToOptions(options_index, ID_time, index) {
+      getInbound_itemsById_time(ID_time).then(iresponse => {
+        console.log('iresponse' + iresponse)
+        for (var each in iresponse) {
+          // 子菜单里面的内容
+          this.formlines[index].back_options[options_index].children[each] = {
+            label: iresponse[each].thickness + 'mm * ' + iresponse[each].width + 'mm * ' + iresponse[each].length + 'm',
+            value: iresponse[each].ID
+          }
+        }
+      })
     },
     searchBtnOnClick(indexOfFormLine) {
       this.formlines[indexOfFormLine].inputDisabled = true
