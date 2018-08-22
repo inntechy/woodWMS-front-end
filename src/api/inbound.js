@@ -53,6 +53,17 @@ export function getInbound_noteById(id) {
   })
 }
 
+// 根据ID获取items
+// GET host/api/Inbound_items/id=:id
+export function getInbound_itemsById(id) {
+  var url = 'api/Inbound_items/id=' + id
+  return request({
+    baseURL: process.env.DB_API,
+    method: 'GET',
+    url: url
+  })
+}
+
 // 根据ID_time获取items
 // GET host/api/Inbound_items/inid=:inid
 export function getInbound_itemsById_time(id) {

@@ -13,22 +13,29 @@
         :label="'规格' + (Number(index) + 1)"
         :key="formline.key"
       >
+        <!-- 货号输入框 -->
         <el-col :span="5">
           <el-input v-model="formline.goods_mark" clearable :disabled="formline.inputDisabled">
             <template slot="prepend">货号</template>
             <el-button slot="append" @click="searchBtnOnClick(index)" icon="el-icon-search"></el-button>
           </el-input>
         </el-col>
-        <el-col :span="4">
+        <!-- 规格选择器 -->
+        <el-col :span="5">
          <el-cascader
           :loading="formline.isGetting"
           :options="formline.back_options"
-          v-model="sizeList[index]"
+          v-model="sizeList[index].sizeID"
           :key="formline.key"
           :disabled="!formline.inputDisabled"
           :show-all-levels="false"
           >
           </el-cascader>
+        </el-col>
+        <!-- 数量选择器 -->
+        <el-col :span="4">
+          <el-input-number 
+          v-model="sizeList[index].quantity" :min="1" :max="getUnsoldPCS(index)" label="宽度"></el-input-number>
         </el-col>
         <el-col :span="10">
         </el-col>
@@ -41,7 +48,7 @@
 </template>
 
 <script>
-import { getInbound_notesByGoodsmark, getInbound_itemsById_time } from '@/api/inbound'
+import { getInbound_notesByGoodsmark, getInbound_itemsById_time, getInbound_itemsById } from '@/api/inbound'
 
 export default {
   data() {
@@ -52,11 +59,16 @@ export default {
       formlines: [{
         isGetting: true,
         goods_mark: null,
+        sellPCS: null,
         inputDisabled: false,
         key: 25,
         back_options: []
       }],
-      sizeList: []
+      sizeList: [{
+        // 需要注意的是 此处返回的sizeID是一个二位数组，其中0位是入库单ID，1位是item的ID
+        sizeID: null,
+        quantity: null
+      }]
     }
   },
   methods: {
@@ -67,7 +79,7 @@ export default {
         for (var responseIndex in response) {
           this.formlines[index].back_options.push({
             value: response[responseIndex].ID_time,
-            label: response[responseIndex].createAt,
+            label: response[responseIndex].createAt + ' 品名：' + response[responseIndex].name,
             children: []
           })
         }
@@ -83,21 +95,40 @@ export default {
     // 将数据填入选项中
     mapDataToOptions(options_index, ID_time, index) {
       getInbound_itemsById_time(ID_time).then(iresponse => {
-        console.log('iresponse' + iresponse)
         for (var each in iresponse) {
           // 子菜单里面的内容
           this.formlines[index].back_options[options_index].children[each] = {
             label: iresponse[each].thickness + 'mm * ' + iresponse[each].width + 'mm * ' + iresponse[each].length + 'm',
-            value: iresponse[each].ID
+            value: iresponse[each].ID,
+            data: iresponse[each]
           }
         }
       })
     },
+
+    // 获取未售出的剩余支数
+    // TO-DO 这种方法是不合适的！！
+    getUnsoldPCS(indexOfFormLine) {
+      if (this.sizeList[indexOfFormLine].sizeID) {
+        var itemID = this.sizeList[indexOfFormLine].sizeID[1]
+        getInbound_itemsById(itemID).then(response => {
+          var unsoldpcs = response.pcs - response.soldpcs
+          return unsoldpcs
+        })
+      } else {
+        return 1
+      }
+    },
+
     searchBtnOnClick(indexOfFormLine) {
       this.formlines[indexOfFormLine].inputDisabled = true
       this.inputCompelet(indexOfFormLine)
     },
     addItem() {
+      this.sizeList.push({
+        sizeID: null,
+        quantity: 1
+      })
       this.formlines.push({
         isGetting: true,
         key: Date.now(),
